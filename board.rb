@@ -1,15 +1,14 @@
 require 'colorize'
 require_relative 'piece.rb'
+require 'byebug'
 
 class Board
-  def initialize(first = true)
-    generate_board(first)
-
+  def initialize(place_pieces = true)
+    generate_board(place_pieces)
   end
 
-
-  def render
-    puts display
+  def display
+    puts render
   end
 
   def [](pos)
@@ -22,11 +21,62 @@ class Board
     @board[x][y] = value
   end
 
+  def move(start_pos, end_pos)
+    self[end_pos] = self[start_pos]
+    self[start_pos] = nil
+  end
 
+  def remove_piece(pos)
+    self[pos] = nil
+  end
+
+  def valid_move_seq?(move_sequence)
+  begin
+    board_dup = dup
+    board_dup[move_sequence.first].perform_moves!(move_sequence.drop(1))
+  rescue => e
+    puts "That move sequence does not work: #{e}"
+    false
+  else
+    true
+  end
+  end
+
+  def over?
+    one_side_empty?
+  end
+
+  def perform_moves(move_sequence)
+    if valid_move_seq?(move_sequence)
+      self[move_sequence.first].perform_moves!(move_sequence.drop(1))
+    else
+      raise "InvalidMoveError"
+    end
+  end
 
   private
 
-  def display
+  def one_side_empty?
+    red = 0
+    white = 0
+    @board.flatten.compact.each do |tile|
+      red += 1 if tile.color == "red"
+      white += 1 if tile.color == "white"
+    end
+
+    red == 0 || white == 0
+  end
+
+  def dup
+    board_dup = Board.new(false)
+    @board.flatten.compact.each do |tile|
+      board_dup[tile.pos] = Piece.new(tile.color, tile.pos, board_dup, tile.queen)
+    end
+
+    board_dup
+  end
+
+  def render
     str = "   "
     8.times do |num|
       str << num.to_s
@@ -47,37 +97,60 @@ class Board
     str
   end
 
-  def generate_board(first)
+  def generate_board(place_pieces)
     @board = Array.new(8) { Array.new(8) }
-    return unless first
+    return unless place_pieces
     place_starting_pieces
   end
 
   def place_starting_pieces
-    starting_positions.each do |pos|
-      row, col = pos
-      color = row <= 2 ? "white" : "red"
-      puts color
+    (0...8).each do |row|
+      (0...8).each do |col|
+        create_piece(row, col)
+      end
+    end
+  end
+
+  def create_piece(row, col)
+    if (row + col).odd? && (row <=2 || row >= 5)
+      color = ((row <= 2) ? "white" : "red")
+      pos = [row, col]
       self[pos] = Piece.new(color, pos, self)
     end
   end
-
-  def starting_positions
-    evens = starts([0, 2, 6], [1, 3, 5, 7])
-    odds = starts([1, 5, 7], [0, 2, 4, 6])
-    evens + odds
-  end
-
-  def starts(rows, cols)
-    positions = []
-    rows.each do |row|
-      cols.each do |col|
-        positions << [row, col]
-      end
-    end
-
-    positions
-  end
-
-
 end
+
+# biar = Board.new
+# a = Piece.new("red", [3,0], biar)
+# biar[[3,0]] = a
+# #print a.possible_slides
+# biar.display
+# biar.move([2,1],[3,2])
+# biar.display
+# puts
+# biar.display
+# a.perform_slide([2,1])
+# biar.display
+# biar.move([5,0],[4,1])
+# biar.display
+# b = Piece.new("white", [3,2], biar)
+# biar[[3, 2]] = b
+# biar[[7,2]] = nil
+# biar.display
+# b.perform_moves!([[5,0], [7, 2]])
+# biar.display
+# biar.move([5,2],[4,1])
+# d = Piece.new("red", [4,1], biar)
+# biar[[4,1]] = d
+# biar.display
+# c = Piece.new("white", [1,2], biar)
+#
+# biar[[1,2]] = c
+# biar.display
+# puts "hi"
+# c.perform_moves([[1,2], [3, 0], [5,2]])
+# #biar.display
+# #biar.display
+# # biar.display
+# # puts "hello"
+# biar.display
