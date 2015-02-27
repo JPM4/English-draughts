@@ -1,4 +1,6 @@
 class HumanPlayer
+  attr_reader :color
+
   def initialize(color, board)
     @color = color
     @board = board
@@ -15,7 +17,7 @@ class HumanPlayer
     puts "Input multiple moves if desired as a sequence."
     puts "e.g. '5-4 3-6'"
     move_seq = gets.chomp
-    [selection.pos] + parse_moves(move_seq)    
+    [selection.pos] + parse_moves(move_seq)
   rescue => e
     puts "Error: #{e}"
     retry

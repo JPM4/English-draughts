@@ -1,6 +1,5 @@
 require 'colorize'
 require_relative 'piece.rb'
-require 'byebug'
 
 class Board
   def initialize(place_pieces = true)
@@ -119,38 +118,3 @@ class Board
     end
   end
 end
-
-# biar = Board.new
-# a = Piece.new("red", [3,0], biar)
-# biar[[3,0]] = a
-# #print a.possible_slides
-# biar.display
-# biar.move([2,1],[3,2])
-# biar.display
-# puts
-# biar.display
-# a.perform_slide([2,1])
-# biar.display
-# biar.move([5,0],[4,1])
-# biar.display
-# b = Piece.new("white", [3,2], biar)
-# biar[[3, 2]] = b
-# biar[[7,2]] = nil
-# biar.display
-# b.perform_moves!([[5,0], [7, 2]])
-# biar.display
-# biar.move([5,2],[4,1])
-# d = Piece.new("red", [4,1], biar)
-# biar[[4,1]] = d
-# biar.display
-# c = Piece.new("white", [1,2], biar)
-#
-# biar[[1,2]] = c
-# biar.display
-# puts "hi"
-# c.perform_moves([[1,2], [3, 0], [5,2]])
-# #biar.display
-# #biar.display
-# # biar.display
-# # puts "hello"
-# biar.display

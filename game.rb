@@ -21,13 +21,11 @@ class Game
       toggle_turn
     end
     toggle_turn
-    puts "Congrats #{@player_turn.to_s.capitalize}, you win!"
+    @board.display
+    puts "Congrats #{@player_turn.color.to_s.capitalize}, you win!"
   end
 
   def toggle_turn
     @player_turn = (@player_turn == @red ? @white : @red)
   end
 end
-
-game = Game.new
-game.play
